@@ -1,57 +1,69 @@
 import { useState } from "react";
 import { createContext } from "react";
 import Api from "../libs/Api";
+import { useNavigate } from "react-router";
 
 export const AuthContext = createContext();
 
-const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(() => {
-    const sharedAuth = localStorage.getItem("auth");
-    return sharedAuth ? JSON.parse(sharedAuth) : null;
+    const store = localStorage.getItem("auth");
+    try {
+      return store ? JSON.parse(store) : null;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
   });
+  const navigate = useNavigate();
 
-  const login = async (credential) => {
+  const login = async (cred) => {
     try {
-      const { data } = await Api.post('api/v1/auth/login', credential);
-      const userDetails = { token: data.token, ...data.user }
-      localStorage.setItem('auth', JSON.stringify(userDetails))
+      const { data } = await Api.post("api/v1/auth/login", cred);
+      const userDetails = { token: data.token, ...data.user };
+      localStorage.setItem("auth", JSON.stringify(userDetails)); // Use JSON.stringify
       setAuth(userDetails);
-      console.log("Login success");
-    } catch (err) {
-      console.log("Login error");
-      throw err
+      navigate("/home");
+    } catch (error) {
+      console.error("Login error: ", error);
+      throw error;
     }
-  }
+  };
 
-  const register = async (credential) => {
+  const register = async (cred) => {
     try {
-      const { data } = await Api.post('api/v1/auth/register', credential);
-      const userDetails = { token: data.token, ...data.user }
-      localStorage.setItem('auth', JSON.stringify(userDetails))
+      const { data } = await Api.post("api/v1/auth/register", cred);
+      const userDetails = { token: data.token, ...data.user };
+      localStorage.setItem("auth", JSON.stringify(userDetails)); // Use JSON.stringify
       setAuth(userDetails);
-      console.log("Register success");
-    } catch (err) {
-      console.log("Register error");
-      throw err
+      navigate("/home");
+    } catch (error) {
+      console.error("Register error: ", error);
+      throw error;
     }
-  }
+  };
 
   const logout = async () => {
     try {
-      await Api.post('api/v1/auth/logout');
+      // Optionally call the logout endpoint
+      await Api.post("api/v1/auth/logout");
+      localStorage.removeItem("auth");
       setAuth(null);
-      localStorage.removeItem('auth');
-    } catch (err) {
-      console.log("Logout error");
-      throw err
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error: ", error);
+      throw error;
     }
-  }
+  };
+
+  // // Optional: Check token expiration and refresh
+  // useEffect(() => {
+  //   // Implement token refresh logic here
+  // }, [auth]);
 
   return (
-    <AuthContext.Provider value={{ auth, login, register, logout }} >
+    <AuthContext.Provider value={{ logout, login, auth, register }}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 };
-
-export default AuthProvider;

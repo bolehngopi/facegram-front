@@ -21,23 +21,29 @@ export const CreatePost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.caption.trim()) return alert("Caption is required.");
-    if (formData.attachments.length === 0) return alert("Please add at least one attachment.");
+    if (formData.attachments.length === 0)
+      return alert("Please add at least one attachment.");
 
     setLoading(true);
     try {
       const data = new FormData();
       data.append("caption", formData.caption);
-      formData.attachments.forEach((file) => data.append("attachments[]", file));
+      formData.attachments.forEach((file) =>
+        data.append("attachments[]", file)
+      );
 
       await Api.post("api/v1/posts", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("Post created successfully!");
       setFormData({ caption: "", attachments: [] });
-      navigate('/');
+      navigate("/");
     } catch (error) {
       console.error("Create post error: ", error);
-      alert(error.response?.data?.message || "An error occurred while creating the post.");
+      alert(
+        error.response?.data?.message ||
+          "An error occurred while creating the post."
+      );
     } finally {
       setLoading(false);
     }
@@ -77,7 +83,11 @@ export const CreatePost = () => {
                 />
               </div>
 
-              <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+              <button
+                type="submit"
+                className="btn btn-primary w-100"
+                disabled={loading}
+              >
                 {loading ? "Sharing..." : "Share"}
               </button>
             </form>

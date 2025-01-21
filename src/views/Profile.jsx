@@ -8,12 +8,13 @@ export const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchUser = async () => {
+  const fetchUser = async (user) => {
     try {
       setLoading(true);
       setError(null);
-      const { data } = await Api.get(`api/v1/users/${id}`);
+      const { data } = await Api.get(`api/v1/users/${user}`);
       setUser(data);
+      console.log(data);
     } catch (err) {
       console.log("Error load user: ", err);
       setError("Failed to load user data. Please try again later.");
@@ -23,18 +24,18 @@ export const Profile = () => {
   };
 
   useEffect(() => {
-    fetchUser();
+    fetchUser(id);
   }, [id]);
 
-  // useEffect(() => {
-  //   if (user?.is_private && auth?.id !== user?.id) {
-  //     navigate('/', { replace: true });
-  //   }
-  // }, [auth, user, navigate]);
-
   useEffect(() => {
-    document.title = `Facegram - Profile of ${user?.username || "private account"}`;
+    document.title = `Facegram - Profile of ${
+      user?.username || "private account"
+    }`;
   }, [user]);
+
+  if (loading) {
+    return <div>Loading</div>;
+  }
 
   return (
     <>
@@ -50,25 +51,27 @@ export const Profile = () => {
           <button className="btn btn-primary w-100 mb-2">Follow</button>
           <div className="d-flex gap-3">
             <div>
-              <div className="profile-label"><b>{user?.posts?.length || 0}</b> posts</div>
+              <div className="profile-label">
+                <b>{user?.posts?.length || 0}</b> posts
+              </div>
             </div>
             <div className="profile-dropdown">
-              <div className="profile-label"><b>100</b> followers</div>
+              <div className="profile-label">
+                <b>100</b> followers
+              </div>
               <div className="profile-list">
                 <div className="card">
-                  <div className="card-body">
-                    {/* Render followers here */}
-                  </div>
+                  <div className="card-body">{/* Render followers here */}</div>
                 </div>
               </div>
             </div>
             <div className="profile-dropdown">
-              <div className="profile-label"><b>100</b> following</div>
+              <div className="profile-label">
+                <b>100</b> following
+              </div>
               <div className="profile-list">
                 <div className="card">
-                  <div className="card-body">
-                    {/* Render following here */}
-                  </div>
+                  <div className="card-body">{/* Render following here */}</div>
                 </div>
               </div>
             </div>
@@ -78,8 +81,6 @@ export const Profile = () => {
       <div className="row justify-content-center">
         {user?.is_private ? (
           <div>This account is private</div>
-        ) : loading ? (
-          <div>Loading...</div>
         ) : error ? (
           <div className="alert alert-danger">{error}</div>
         ) : user?.posts?.length > 0 ? (
@@ -91,7 +92,9 @@ export const Profile = () => {
                     {post?.attachments?.map((image, index) => (
                       <img
                         key={index}
-                        src={`${import.meta.env.VITE_API_URL}/storage/${image.storage_path}`}
+                        src={`${import.meta.env.VITE_API_URL}/storage/${
+                          image.storage_path
+                        }`}
                         alt={`Image ${index + 1} from ${user.username}`}
                         className="w-100"
                       />

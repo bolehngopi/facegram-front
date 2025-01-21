@@ -11,7 +11,7 @@ const DefaultLayout = () => {
         </div>
       </main>
     </>
-  )
-}
+  );
+};
 
 export default DefaultLayout;

@@ -1,10 +1,10 @@
-import { Route, Routes } from "react-router"
-import DefaultLayout from "./layouts/DefaultLayout"
-import { Login } from "./views/auth/Login"
-import { Home } from "./views/Home"
-import { Profile } from "./views/Profile"
-import { CreatePost } from "./views/CreatePost"
-import { Register } from "./views/auth/Register"
+import { Route, Routes } from "react-router";
+import DefaultLayout from "./layouts/DefaultLayout";
+import { Login } from "./views/auth/Login";
+import { Home } from "./views/Home";
+import { Profile } from "./views/Profile";
+import { CreatePost } from "./views/CreatePost";
+import { Register } from "./views/auth/Register";
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
         <Route path="/create" element={<CreatePost />} />
       </Route>
     </Routes>
-  )
+  );
 }
 
-export default App
+export default App;
